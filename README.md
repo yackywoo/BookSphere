@@ -63,4 +63,3 @@ BookNest is a comprehensive social platform for book lovers to share video revie
 - npm or yarn
 - Expo CLI (`npm install -g @expo/cli`)
 - Firebase account
-- iOS Simulator (for iOS development) or Android Emulator (for Android development)
