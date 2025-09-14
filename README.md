@@ -4,21 +4,23 @@ BookNest is a comprehensive social platform for book lovers to share video revie
 
 ## ✨ Features
 
-### 🎥 Video Reviews
-- Record and upload video book reviews
-- Like, comment, and share videos
-- Video playback with custom controls
-- Thumbnail generation and video optimization
+### 📖 PDF book reader & page comments
+- Users can view and write comments on every page
+- Like, and share comments
+
+### 🧑‍🏫 Book Reviews
+- Write and upload book reviews for all the books you've read
+- Like, comment, and share reviews
 - Spoiler detection and community notes
 
-### 📖 Book Clubs
+### ♣️ Book Clubs
 - Create and join book clubs
 - Real-time discussions and chat
 - Member management and invitations
 - Club activity tracking
 
 ### 🔍 Search & Discovery
-- Advanced search across videos, clubs, and books
+- Advanced search across users, clubs, and books
 - Filter by content type
 - Book recommendations
 - Trending content
