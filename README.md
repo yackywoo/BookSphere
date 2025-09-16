@@ -1,6 +1,6 @@
 # BookSphere 📚
 
-BookNest is a comprehensive social platform for book lovers to share video reviews, join book clubs, and connect with fellow readers. Built with React Native, Expo, and Firebase.
+BookSphere is a comprehensive social platform for book lovers to share video reviews, join book clubs, and connect with fellow readers. Built with React Native, Expo, and Firebase.
 
 ## ✨ Features
 
