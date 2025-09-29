@@ -1,13 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createUser } from '../../../../lib/auth';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const { email, password, firstName, lastName } = await req.json();
 
     // Basic validation
     if (!email || !password || !firstName || !lastName) {
-      return NextResponse.json({
+      return Response.json({
         success: false,
         message: 'All fields are required',
       }, { status: 400 });
@@ -16,7 +14,7 @@ export async function POST(req: NextRequest) {
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json({
+      return Response.json({
         success: false,
         message: 'Please enter a valid email address',
       }, { status: 400 });
@@ -24,27 +22,22 @@ export async function POST(req: NextRequest) {
 
     // Password validation
     if (password.length < 6) {
-      return NextResponse.json({
+      return Response.json({
         success: false,
         message: 'Password must be at least 6 characters long',
       }, { status: 400 });
     }
 
-    const result = await createUser({
-      email,
-      password,
-      firstName,
-      lastName,
-    });
-
-    if (result.success) {
-      return NextResponse.json(result, { status: 201 });
-    } else {
-      return NextResponse.json(result, { status: 400 });
-    }
+    // For now, redirect to the Express server
+    // In production, call Express server at localhost:5000
+    return Response.json({
+      success: false,
+      message: 'Please use the Express server at localhost:5000 for authentication',
+      redirectUrl: 'http://localhost:5000/api/auth/signup'
+    }, { status: 302 });
   } catch (error) {
     console.error('Signup error:', error);
-    return NextResponse.json({
+    return Response.json({
       success: false,
       message: 'Internal server error',
     }, { status: 500 });

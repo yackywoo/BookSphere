@@ -15,7 +15,7 @@ export default function Index() {
       }
     };
     redirect();
-  }, []);
+  }, [router]);
 
   return null; // show nothing while redirecting
 }

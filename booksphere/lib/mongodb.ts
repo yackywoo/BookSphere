@@ -16,15 +16,16 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
   }
 
   if (!cached!.promise) {
-    cached!.promise = MongoClient.connect(MONGODB_URI).then((client) => {
+    cached!.promise = MongoClient.connect(MONGODB_URI).then((client: MongoClient) => {
       return {
         client,
         db: client.db(MONGODB_DB),
       };
     });
   }
-  cached!.conn = await cached!.promise;
-  return cached!.conn;
+  const result = await cached!.promise;
+  cached!.conn = result;
+  return result;
 }
 
 // User schema interface

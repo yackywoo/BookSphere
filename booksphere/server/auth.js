@@ -1,47 +1,61 @@
-import * as bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
-import { connectToDatabase, User } from './mongodb';
-import { config } from '../config/env';
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { MongoClient } = require('mongodb');
 
-const JWT_SECRET = config.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-export interface AuthResponse {
-  success: boolean;
-  message: string;
-  user?: Omit<User, 'password'>;
-  token?: string;
+let cached = global.mongo;
+
+if (!cached) {
+  cached = global.mongo = { conn: null, promise: null };
 }
 
-export async function hashPassword(password: string): Promise<string> {
+async function connectToDatabase() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/booksphere-dev';
+    const MONGODB_DB = process.env.MONGODB_DB || 'booksphere-dev';
+    
+    cached.promise = MongoClient.connect(MONGODB_URI).then((client) => {
+      return {
+        client,
+        db: client.db(MONGODB_DB),
+      };
+    });
+  }
+  const result = await cached.promise;
+  cached.conn = result;
+  return result;
+}
+
+async function hashPassword(password) {
   const saltRounds = 12;
   return bcrypt.hash(password, saltRounds);
 }
 
-export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+async function verifyPassword(password, hashedPassword) {
   return bcrypt.compare(password, hashedPassword);
 }
 
-export function generateToken(userId: string): string {
+function generateToken(userId) {
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
 }
 
-export function verifyToken(token: string): { userId: string } | null {
+function verifyToken(token) {
   try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string };
+    return jwt.verify(token, JWT_SECRET);
   } catch {
     return null;
   }
 }
 
-export async function createUser(userData: {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-}): Promise<AuthResponse> {
+async function createUser(userData) {
   try {
     const { db } = await connectToDatabase();
-    const users = db.collection<User>('users');
+    const users = db.collection('users');
 
     // Check if user already exists
     const existingUser = await users.findOne({ email: userData.email });
@@ -56,7 +70,7 @@ export async function createUser(userData: {
     const hashedPassword = await hashPassword(userData.password);
 
     // Create user
-    const newUser: Omit<User, '_id'> = {
+    const newUser = {
       email: userData.email,
       password: hashedPassword,
       firstName: userData.firstName,
@@ -65,7 +79,7 @@ export async function createUser(userData: {
       updatedAt: new Date(),
     };
 
-    const result = await users.insertOne(newUser as User);
+    const result = await users.insertOne(newUser);
     const user = await users.findOne({ _id: result.insertedId });
 
     if (!user) {
@@ -75,7 +89,7 @@ export async function createUser(userData: {
       };
     }
 
-    const token = generateToken(user._id!.toString());
+    const token = generateToken(user._id.toString());
 
     return {
       success: true,
@@ -99,10 +113,10 @@ export async function createUser(userData: {
   }
 }
 
-export async function authenticateUser(email: string, password: string): Promise<AuthResponse> {
+async function authenticateUser(email, password) {
   try {
     const { db } = await connectToDatabase();
-    const users = db.collection<User>('users');
+    const users = db.collection('users');
 
     const user = await users.findOne({ email });
     if (!user) {
@@ -120,7 +134,7 @@ export async function authenticateUser(email: string, password: string): Promise
       };
     }
 
-    const token = generateToken(user._id!.toString());
+    const token = generateToken(user._id.toString());
 
     return {
       success: true,
@@ -144,10 +158,10 @@ export async function authenticateUser(email: string, password: string): Promise
   }
 }
 
-export async function getUserById(userId: string): Promise<Omit<User, 'password'> | null> {
+async function getUserById(userId) {
   try {
     const { db } = await connectToDatabase();
-    const users = db.collection<User>('users');
+    const users = db.collection('users');
 
     const user = await users.findOne({ _id: userId });
     if (!user) {
@@ -167,3 +181,10 @@ export async function getUserById(userId: string): Promise<Omit<User, 'password'
     return null;
   }
 }
+
+module.exports = {
+  createUser,
+  authenticateUser,
+  getUserById,
+  verifyToken,
+};

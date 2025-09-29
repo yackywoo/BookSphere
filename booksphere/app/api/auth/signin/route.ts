@@ -1,29 +1,26 @@
 
-import { NextRequest, NextResponse } from 'next/server';
-import { authenticateUser } from '../../../../lib/auth';
-
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
     // Basic validation
     if (!email || !password) {
-      return NextResponse.json({
+      return Response.json({
         success: false,
         message: 'Email and password are required',
       }, { status: 400 });
     }
 
-    const result = await authenticateUser(email, password);
-
-    if (result.success) {
-      return NextResponse.json(result, { status: 200 });
-    } else {
-      return NextResponse.json(result, { status: 401 });
-    }
+    // For now, redirect to the Express server
+    // In production, you should call your Express server at localhost:5000
+    return Response.json({
+      success: false,
+      message: 'Please use the Express server at localhost:5000 for authentication',
+      redirectUrl: 'http://localhost:5000/api/auth/signin'
+    }, { status: 302 });
   } catch (error) {
     console.error('Signin error:', error);
-    return NextResponse.json({
+    return Response.json({
       success: false,
       message: 'Internal server error',
     }, { status: 500 });

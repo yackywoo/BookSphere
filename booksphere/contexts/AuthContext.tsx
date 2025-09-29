@@ -54,7 +54,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (token) {
         // Verify token with backend
-        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+        const response = await fetch(`http://localhost:5000/api/auth/verify`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setError(null);
       setIsLoading(true);
 
-      const response = await fetch(`${API_BASE_URL}/auth/signin`, {
+      const response = await fetch(`http://localhost:5000/api/auth/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setError(null);
       setIsLoading(true);
 
-      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+      const response = await fetch(`http://localhost:5000/api/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
