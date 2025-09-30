@@ -7,12 +7,11 @@ export default function PdfViewer({ source }) {
 
   return (
     <View style={styles.container}>
-      {/* The PDF component will take up the full space and be scrollable by default */}
       <Pdf
         source={source}
         trustAllCerts={false}
         onLoadComplete={() => {
-          setIsLoading(false); // Turn off the loader when the PDF is ready
+          setIsLoading(false); 
         }}
         onError={(error) => {
           console.error(error);
@@ -21,7 +20,6 @@ export default function PdfViewer({ source }) {
         style={styles.pdf}
       />
 
-      {/* A simple loading indicator that overlays the view */}
       {isLoading && (
         <View style={styles.loaderOverlay}>
           <ActivityIndicator size="large" />
