@@ -36,7 +36,6 @@ export default function RootLayout() {
         // Main app: show Tabs
         <>
           <Stack.Screen name="(tabs)/index" />
-          <Stack.Screen name="(tabs)/explore" />
         </>
       ) : (
         // Auth flow: first screen is signIn
