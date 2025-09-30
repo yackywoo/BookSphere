@@ -20,13 +20,6 @@ export default function Index()
           onPress={() => router.push('/viewer')}
         />
       </View>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Book Search"
-          onPress={() => router.push('/search')}
-        />
-      </View>
     </View>
   );
 }
