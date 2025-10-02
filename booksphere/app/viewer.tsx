@@ -6,7 +6,6 @@ import PdfViewer from '../components/PdfViewer';
 
 // const pdfSource = require('../assets/Syllabus.pdf');
 export default function ViewerScreen() {
-
   const { url } = useLocalSearchParams<{ url: string }>();
   if (!url) {
     return (
