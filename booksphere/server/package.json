@@ -1,31 +1,4 @@
 {
-<<<<<<< HEAD
-    "name":  "server",
-    "version":  "1.0.0",
-    "main":  "index.js",
-    "scripts":  {
-                    "start":  "node index.js",
-                    "dev":  "nodemon index.js"
-                },
-    "keywords":  [
-
-                 ],
-    "author":  "",
-    "license":  "ISC",
-    "description":  "",
-    "dependencies":  {
-                         "bcryptjs":  "^3.0.2",
-                         "cors":  "^2.8.5",
-                         "dotenv":  "^17.2.2",
-                         "express":  "^5.1.0",
-                         "express-validator":  "^7.2.1",
-                         "jsonwebtoken":  "^9.0.2",
-                         "mongodb":  "^6.3.0"
-                     },
-    "devDependencies":  {
-                            "nodemon":  "^3.1.10"
-                        }
-=======
     "name": "server",
     "version": "1.0.0",
     "main": "index.js",
@@ -54,5 +27,4 @@
         "@types/node": "^24.6.0",
         "nodemon": "^3.1.10"
     }
->>>>>>> 1eb93055114a9bc0f4f289f68542009ea1ebe754
 }
