@@ -1,52 +1,54 @@
+// booksphere/contexts/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SecureStore from 'expo-secure-store';
-import { config } from '../config/env';
+import { signinUser, signupUser, verifyUserToken } from '../lib/api-auth';
 
-export interface User {
-  _id: string;
+type User = {
+  _id?: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  createdAt: string;
-  updatedAt: string;
-}
+  firstName?: string;
+  lastName?: string;
+};
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  signIn: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
-  signUp: (userData: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-  }) => Promise<{ success: boolean; message: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; token?: string; user?: User }>;
+  register: (payload: { email: string; password: string; firstName: string; lastName: string }) => Promise<any>;
   signOut: () => Promise<void>;
-  clearError: () => void;
-  error: string | null;
-}
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-const API_BASE_URL = config.api.baseUrl;
-
-export function AuthProvider({ children }: AuthProviderProps) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const isAuthenticated = !!user;
 
   useEffect(() => {
-    checkAuthState();
+    const init = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          const res = await verifyUserToken(token);
+          if (res?.success && res.user) {
+            setUser(res.user);
+          } else {
+            await AsyncStorage.removeItem('token');
+            setUser(null);
+          }
+        }
+      } catch (err) {
+        console.warn('Auth init err', err);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    init();
   }, []);
 
+<<<<<<< HEAD
   const checkAuthState = async () => {
     try {
       setIsLoading(true);
@@ -75,9 +77,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await SecureStore.deleteItemAsync('authToken');
     } finally {
       setIsLoading(false);
+=======
+  const login = async (email: string, password: string) => {
+    const res = await signinUser(email, password);
+    if (res?.success && res.token) {
+      await AsyncStorage.setItem('token', res.token);
+      setUser(res.user ?? null);
+>>>>>>> 1eb93055114a9bc0f4f289f68542009ea1ebe754
     }
+    return res;
   };
 
+<<<<<<< HEAD
   const signIn = async (email: string, password: string) => {
     try {
       setError(null);
@@ -144,41 +155,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return { success: false, message: errorMessage };
     } finally {
       setIsLoading(false);
+=======
+  const register = async (payload: { email: string; password: string; firstName: string; lastName: string }) => {
+    const res = await signupUser(payload);
+    if (res?.success && res.token) {
+      await AsyncStorage.setItem('token', res.token);
+      setUser(res.user ?? null);
+>>>>>>> 1eb93055114a9bc0f4f289f68542009ea1ebe754
     }
+    return res;
   };
 
   const signOut = async () => {
-    try {
-      await SecureStore.deleteItemAsync('authToken');
-      setUser(null);
-      setError(null);
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+    await AsyncStorage.removeItem('token');
+    setUser(null);
   };
 
-  const clearError = () => {
-    setError(null);
-  };
-
-  const value: AuthContextType = {
-    user,
-    isLoading,
-    isAuthenticated,
-    signIn,
-    signUp,
-    signOut,
-    clearError,
-    error,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  return (
+    <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, login, register, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 }
