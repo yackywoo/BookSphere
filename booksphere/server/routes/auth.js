@@ -1,4 +1,5 @@
 const express = require("express");
+<<<<<<< HEAD
 const { body, validationResult } = require("express-validator");
 const { createUser, authenticateUser, getUserById, verifyToken } = require("../auth");
 
@@ -92,6 +93,39 @@ router.get("/verify", async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(401).json({ success: false, message: "Invalid token" });
+=======
+const { createUser, authenticateUser } = require("../lib/auth");
+
+const router = express.Router();
+
+// Signup endpoint
+router.post("/signup", async (req, res) => {
+  try {
+    const { email, password, firstName, lastName } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required" });
+    }
+    const user = await createUser({ email, password, firstName, lastName });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Login endpoint
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required" });
+    }
+    const user = await authenticateUser(email, password);
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+>>>>>>> 1eb93055114a9bc0f4f289f68542009ea1ebe754
   }
 });
 
